@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+{% block title %}Logowanie{% endblock title %}
+
+{% block page %}
+    
+    <div class="card" style="width: 26rem;">
+        <div class="card-body">
+            <h5 class="card-title">Zaloguj się</h5>
+            <form method="post">
+                {% csrf_token %}
+                <button type='submit' class="btn btn-primary">Zaloguj</button>
+            </form>
+        </div>
+    </div>
+{% endblock page %}

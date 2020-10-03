@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+{% block title %}Usuń cel
+{% endblock title %}
+{% block page %}
+
+    <h1>Czy na pewno chcesz usunąć ten cel "{{ cel.title }}"?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <button type='submit'>Usuń cel</button>
+    </form>
+{% endblock page %}    
