@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+table {
+    background-color: aliceblue;
+    width: 60%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+thead {
+    background-color: darkblue;
+    color: white;
+
+}
+
+td {
+    width: 20%;
+    min-width: 120px;
+    border: 2px solid white;
+}
+
+td:nth-child(1) {
+    width: 40%;
+}
+
+h4 {
+    width: 80%;
+    margin: 50px auto;
+}

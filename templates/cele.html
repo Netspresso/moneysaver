@@ -1,11 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h4>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Cupiditate odit beatae aut dolorum corporis magni? Tempora asperiores fugiat deserunt modi, earum odit deleniti eligendi quae consequuntur quam eaque cumque sed!</h4>
-</body>
-</html>
+{% extends 'main.html' %}
+{% load static %}
+{% block title %}Twoje cele{% endblock title %}
+{% block page %}
+    <main>
+        {% if cele|length == 0 %}
+        <h2>Brak filmów</h2>
+        
+    {% else %}
+    
+        <h2 class="card-title">Ilosc celów bazie danych: {{ cele|length }}</h2>
+        
+            
+    {% endif %}
+        <table>
+            <thead>
+                <tr>
+                    <td>Cel</td>
+                    <td>Kwota</td>
+                    <td>Data</td>
+                    <td>Pozostało</td>
+                </tr> 
+            </thead>
+            <tbody>
+                {% for cel in cele %}
+                <tr>
+                    <td>{{ cel.cel }}</td>
+                    <td>{{ cel.kwota }}</td>
+                    <td>{{ cel.data }}</td>
+                    <td>{{ cel.data|timeuntil }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="2" style="background-color: rgb(43, 154, 228);">Łączna kwota</td>
+                    <td colspan="2" style="background-color: rgb(43, 154, 228);">{{ suma }}</td>
+                </tr>
+            </tbody>
+           
+        </table>
+
+        <h4>Biorąc pod uwagę twoje cele finansowe i ich planowane daty realizacji, w tym tygodniu powinienieś odłożyć {{ weekly_sum }}zł aby krok po kroku dochodzić do swoich celów.</h4>
+    </main>
+
+{% endblock page %}
