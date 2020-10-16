@@ -1,68 +1,58 @@
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Cel
-from django.contrib.auth.decorators import login_required
-from .forms import AimsForm
-from django.db.models import Sum
-from datetime import datetime
-import math
+from .models import Aim
+# from .forms import AimsForm
+# from datetime import datetime
+from .serializers import AimSerializer
+# import math
+from django.http import JsonResponse
 
 
-def all_aims(request):
-    ''' Takes all Cel objects from db and generate dynamic template using this objects '''
-    aims = Cel.objects.all()
-    # Here I calculate the sum cost of all aims and Here I create functionality that calculate monthly savings
-    suma = 0
-    weekly_sum = 0
-    now = datetime.now().date()
+@api_view(['GET'])
+def api_overview(request):
 
-    for aim in aims:
-        suma += aim.kwota
-        delta = now - aim.data
-        weekly_sum += aim.kwota / delta.days * 7
+    api_urls = {
+        'List': '/aim-list',
+        'Create': '/aim-create',
+        'Update': 'aim-update/<str:pk>/',
+        'Delete': 'aim-delete/<str:pk>/',
+    }
 
-    weekly_sum = math.ceil(abs(weekly_sum))
-
-    return render(request, 'cele.html', {
-        'cele': aims,
-        'suma': suma,
-        'weekly_sum': weekly_sum
-    })
+    return Response(api_urls)
 
 
-@login_required
-def new_aim(request):
-    ''' Displays form that allow legged user to add new aim '''
-    aims_form = AimsForm(request.POST or None, request.FILES or None)
-
-    if all(aims_form.is_valid()):
-        aim = aims_form.save(commit=False)
-        aim.save()
-        return redirect(all_aims)
-
-    return render(request, 'aims_form.html', {'form': aims_form, 'new': True})
+@api_view(['GET'])
+def aim_list(request):
+    aims = Aim.objects.all()
+    serializer = AimSerializer(aims, many=True)
+    return Response(serializer.data)
 
 
-@login_required
-def edit_aim(request, id):
-    ''' Displays edit form that allow logged user to edit his aims '''
-    movie = get_object_or_404(Cel, pk=id)
-    aims_form = AimsForm(request.POST or None,
-                         request.FILES or None,
-                         instance=movie)
-    if aims_form.is_valid():
-        movie = aims_form.save(commit=False)
-        movie.save()
-        return redirect(all_aims)
-    return render(request, 'aims_form.html', {'form': aims_form, 'new': False})
+@api_view(['POST'])
+def aim_create(request):
+    serializer = AimSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
 
 
-@login_required
-def delete_aim(request, id):
-    ''' Display submit screen and allow logged user to delete his aims one by one '''
-    aim = get_object_or_404(Cel, pk=id)
+@api_view(['GET'])
+def aim_update(request, pk):
+    aim = Aim.objects.get(id=pk)
+    serializer = AimSerializer(instance=aim, data=request.data)
 
-    if request.method == 'POST':
-        aim.delete()
-        return redirect(all_aims)
+    if serializer.is_valid():
+        serializer.save()
 
-    return render(request, 'submit.html', {'cel': aim})
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def aim_delete(request, pk):
+    aim = Aim.objects.get(id=pk)
+    aim.delete()
+
+    return Response("Item succesfully deleted")
