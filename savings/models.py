@@ -1,6 +1,6 @@
 from django.db import models
-from datetime import datetime
-from django.db.models.functions import Extract
+# from datetime import datetime
+# from django.db.models.functions import Extract
 
 
 class Aim(models.Model):
