@@ -4,10 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions, viewsets, generics
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
-# from .forms import AimsForm
-# from datetime import datetime
 from .serializers import AimSerializer, UserSerializer, RegisterSerializer
-# import math
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -15,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import CreateUserForm
 from django.contrib import messages
 from knox.models import AuthToken
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.views import LoginView as KnoxLoginView
 
 
 @api_view(['GET'])
@@ -22,10 +21,14 @@ def api_overview(request):
 
     api_urls = {
         'List': '/aim-list',
-        'User_aims_list': '<str:user>/aim-list',
+        'User_aims_list': '/<str:user>/aim-list',
         'Create': '/aim-create',
-        'Update': 'aim-update/<str:pk>/',
-        'Delete': 'aim-delete/<str:pk>/',
+        'Update': '/aim-update/<str:pk>/',
+        'Delete': '/aim-delete/<str:pk>/',
+        'Login': '/login',
+        'Logout': '/logout',
+        'Logout_tall': '/logoutall',
+        'Register': '/register',
     }
 
     return Response(api_urls)
@@ -97,3 +100,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class LoginAPI(KnoxLoginView):
+    permission_classes = (permissions.AllowAny, )
+
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(LoginAPI, self).post(request, format=None)
