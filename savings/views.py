@@ -21,8 +21,8 @@ def api_overview(request):
 
     api_urls = {
         'List': '/aim-list',
-        'User_aims_list': '/<str:user>/aim-list',
-        'Create': '/aim-create',
+        'User_aims_list': '/<username>/aim-list',
+        'Create': '<username>/aim-create',
         'Update': '/aim-update/<str:pk>/',
         'Delete': '/aim-delete/<str:pk>/',
         'Login': '/login',
@@ -42,15 +42,27 @@ def aim_list(request):
 
 
 @api_view(['GET'])
-def user_aim_list(request, user):
-    aims = Aim.objects.filter(owner=user)
+def user_aim_list(request, username):
+    user = User.objects.get(username=username)
+    aims = Aim.objects.filter(owner=user.id)
     serializer = AimSerializer(aims, many=True)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
-def aim_create(request):
-    serializer = AimSerializer(data=request.data)
+def aim_create(request, username):
+    '''
+    {
+        "aim": <"str">,
+        "data": <"yyyy-mm-dd">,
+        "price": <int>
+    }
+    '''
+
+    user = User.objects.get(username=username)
+    aim = Aim(owner=user)
+
+    serializer = AimSerializer(aim, data=request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -60,6 +72,16 @@ def aim_create(request):
 
 @api_view(['PUT'])
 def aim_update(request, pk):
+    '''
+    {
+        "id": <int>,
+        "aim": <str>,
+        "data": <"yyyy-mm-dd">,
+        "price": <int>,
+        "owner": <str>
+    }
+    '''
+
     aim = Aim.objects.get(id=pk)
     serializer = AimSerializer(instance=aim, data=request.data)
 
