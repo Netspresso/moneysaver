@@ -22,6 +22,7 @@ def api_overview(request):
 
     api_urls = {
         'List': '/aim-list',
+        'User_aims_list': '<str:user>/aim-list',
         'Create': '/aim-create',
         'Update': 'aim-update/<str:pk>/',
         'Delete': 'aim-delete/<str:pk>/',
@@ -37,6 +38,13 @@ def aim_list(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def user_aim_list(request, user):
+    aims = Aim.objects.filter(owner=user)
+    serializer = AimSerializer(aims, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['POST'])
 def aim_create(request):
     serializer = AimSerializer(data=request.data)
@@ -47,7 +55,7 @@ def aim_create(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['PUT'])
 def aim_update(request, pk):
     aim = Aim.objects.get(id=pk)
     serializer = AimSerializer(instance=aim, data=request.data)
@@ -82,48 +90,10 @@ class RegisterAPI(generics.GenericAPIView):
         })
 
 
-# class Registration_view(APIView):
-#     ''' Creates the user '''
-#     def post(self, request, format='json'):
-#         if request.method == 'POST':
-#             serializer = RegisterSerializer(data=request.data)
-#             data = {}
-#             if serializer.is_valid():
-#                 user = serializer.save()
-#                 data['response'] = 'Succesfully registered a new user.'
-#                 data['email'] = user.email
-#                 data['username'] = user.username
-#             else:
-#                 data = serializer.errors
-#             return Response(data)
-
-
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-# def calculate_finances(request):
-#     ''' Takes all Aim objects from db and generate dynamic template using this objects '''
-#     aims = Aim.objects.all()
-#     # Here I calculate the sum cost of all aims and Here I create functionality that calculate monthly savings
-#     sum = 0
-#     weekly_sum = 0
-#     now = datetime.now().date()
-#    ''' pip install datetime and import'''
-#     for aim in aims:
-#         sum += aim.price
-#         delta = now - aim.data
-#         weekly_sum += aim.price / delta.days * 7
-
-#     weekly_sum = math.ceil(abs(weekly_sum))
-
-#     return render(request, 'cele.html', {
-#         'cele': aims,
-#         'suma': sum,
-#         'weekly_sum': weekly_sum
-#     })
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

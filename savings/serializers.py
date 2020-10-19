@@ -4,16 +4,21 @@ from django.contrib.auth.models import User
 
 
 class AimSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Aim
-        fields = '__all__'
+        fields = ('aim', 'data', 'price', 'owner')
 
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
+    aims = serializers.PrimaryKeyRelatedField(many=True,
+                                              queryset=Aim.objects.all())
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email', 'aims')
 
 
 # Register Serializer
@@ -24,10 +29,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User(validated_data['username'], validated_data['email'],
-                    validated_data['password'])
+        user = User.objects.create_user(username=validated_data['username'],
+                                        email=validated_data['email'])
+        user.set_password(validated_data['password'])
         return user
