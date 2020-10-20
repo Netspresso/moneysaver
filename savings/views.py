@@ -126,7 +126,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class LoginAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny, )
-
+    '''
+    {
+        "username": <str>,
+        "password": <str>
+    }
+    '''
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
