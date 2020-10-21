@@ -10,6 +10,7 @@ router.register(r'users', UserViewSet, basename='user')
 urlpatterns = [
     path('', api_overview, name="api-overview"),
     path('aim-list/', aim_list, name="aim-list"),
+    path('aim-details/<str:pk>/', aim_details, name="aim-details"),
     path('<str:username>/aim-list/', user_aim_list, name="user_aim-list"),
     path('<str:username>/aim-create/', aim_create, name="aim-create"),
     path('aim-update/<str:pk>/', aim_update, name="aim-update"),

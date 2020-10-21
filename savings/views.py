@@ -20,9 +20,10 @@ from knox.views import LoginView as KnoxLoginView
 def api_overview(request):
 
     api_urls = {
-        'List': '/aim-list',
+        'List': '/aim-list/',
+        'Aim_details': '/aim-details/<str:pk>/',
         'User_aims_list': '/<username>/aim-list',
-        'Create': '<username>/aim-create',
+        'Create': '<username>/aim-create/',
         'Update': '/aim-update/<str:pk>/',
         'Delete': '/aim-delete/<str:pk>/',
         'Login': '/login',
@@ -38,6 +39,13 @@ def api_overview(request):
 def aim_list(request):
     aims = Aim.objects.all()
     serializer = AimSerializer(aims, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def aim_details(request, pk):
+    aim = Aim.objects.get(id=pk)
+    serializer = AimSerializer(aim, many=False)
     return Response(serializer.data)
 
 
