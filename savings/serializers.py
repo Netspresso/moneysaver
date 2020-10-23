@@ -8,7 +8,7 @@ class AimSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aim
-        fields = ('id', 'aim', 'data', 'price', 'owner')
+        fields = ('id', 'aim', 'data', 'price', 'is_finished', 'owner')
 
 
 # User Serializer

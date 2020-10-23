@@ -86,6 +86,7 @@ def aim_update(request, pk):
         "aim": <str>,
         "data": <"yyyy-mm-dd">,
         "price": <int>,
+        "is_finished": <bool>,
         "owner": <str>
     }
     '''
